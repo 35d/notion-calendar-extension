@@ -59,12 +59,15 @@ const post = (title, databaseId, token) => {
 
 /** Chrome のストレージに入っている情報を取得 */
 const getStorageData = () => {
-  chrome.storage.sync.get(["token", "databaseId", "status", "date"], (items) => {
-    databaseId = items.databaseId;
-    token = items.token;
-    status = items.status || "ステータス";
-    date = items.date || "日付";
-  });
+  chrome.storage.sync.get(
+    ["token", "databaseId", "status", "date"],
+    (items) => {
+      databaseId = items.databaseId;
+      token = items.token;
+      status = items.status || "ステータス";
+      date = items.date || "日付";
+    }
+  );
 };
 
 /** 設定画面を開く */

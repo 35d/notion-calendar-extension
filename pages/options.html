@@ -1,78 +1,123 @@
 <html lang="ja">
-  <head>
-    <title>Notion Calendar Extension 拡張機能のオプション</title>
-    <meta charset="UTF-8" />
-    <script src="../lib/jquery-3.7.1.min.js"></script>
-    <script src="../scripts/options.js"></script>
-    <style>
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        padding: 20px;
-        background-color: #f7f8fa;
-      }
+<head>
+  <title>Notion Calendar Extension 拡張機能のオプション</title>
+  <meta charset="UTF-8" />
+  <link href="../lib/select2.min.css" rel="stylesheet" />
+  <script src="../lib/jquery-3.7.1.min.js"></script>
+  <script src="../lib/select2.min.js"></script>
+  <script src="../scripts/options.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background-color: #f7f8fa;
+    }
 
-      h1 {
-        color: #333333;
-      }
+    h1 {
+      color: #333333;
+    }
 
-      form {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        max-width: 720px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
+    form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 720px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-      label {
-        display: block;
-        margin-bottom: 4px;
-        color: #333333;
-      }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      color: #333333;
+    }
 
-      input[type="text"] {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 20px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-      }
+    input[type="text"] {
+      width: 100%;
+      height: 34px;
+      padding: 8px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
 
-      button {
-        background-color: #0052cc;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        margin: 0 auto;
-      }
+    select {
+      width: 100%;
+    }
 
-      button:hover {
-        background-color: #003899;
-      }
+    .select2-selection__rendered {
+      line-height: 31px !important;
+    }
 
-      .button-area {
-        display: flex;
-        justify-content: center;
-      }
-    </style>
-  </head>
+    .select2-container .select2-selection--single {
+      height: 35px !important;
+    }
 
-  <body>
-    <h1>Notion Calendar Extension 設定</h1>
-    <form id="settingsForm">
+    .select2-selection__arrow {
+      height: 34px !important;
+    }
+
+    .select-wrapper {
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #0052cc;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 0 auto;
+    }
+
+    button:hover {
+      background-color: #003899;
+    }
+
+    .button-area {
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Notion Calendar Extension 設定</h1>
+  <form id="settingsForm">
+    <div>
       <label for="token">トークン</label>
       <input type="text" id="token" name="token" />
-      <label for="databaseId">データベースID:</label>
+      <label for="databaseId">データベースID</label>
       <input type="text" id="databaseId" name="databaseId" />
-      <label for="status">ステータスプロパティ名（デフォルトは「ステータス」）</label>
-      <input type="text" id="status" name="status" />
-      <label for="date">日付プロパティ名</label>
-      <input type="text" id="date" name="date" />
       <div class="button-area">
-        <button type="submit">保存</button>
+        <button id="readProperties" type="button">プロパティを読み込む</button>
       </div>
-    </form>
-  </body>
+    </div>
+    <div class="select-wrapper">
+      <label for="status">ステータスプロパティ名</label>
+      <select id="statusPropertyId" class="select-status">
+        <option value="s1">ステータス1</option>
+        <option value="s2">ステータス2</option>
+      </select>
+    </div>
+    <div class="select-wrapper">
+      <label for="option">オプションプロパティ名</label>
+      <select id="statusOptionId" class="select-option">
+        <option value="o1">オプション1</option>
+        <option value="o2">オプション2</option>
+      </select>
+    </div>
+    <div class="select-wrapper">
+      <label for="date">日付プロパティ名</label>
+      <select id="datePropertyId" class="select-date">
+        <option value="d1">日付1</option>
+        <option value="d2">日付2</option>
+      </select>
+    </div>
+    <div class="button-area">
+      <button type="submit">保存</button>
+    </div>
+  </form>
+</body>
 </html>
