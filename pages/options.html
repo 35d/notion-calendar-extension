@@ -13,7 +13,8 @@
       background-color: #f7f8fa;
     }
 
-    h1 {
+    h1,
+    h3 {
       color: #333333;
     }
 
@@ -94,17 +95,31 @@
         <button id="readProperties" type="button">プロパティを読み込む</button>
       </div>
     </div>
+    <h3>開始</h3>
     <div class="select-wrapper">
-      <label for="status">ステータスプロパティ名</label>
-      <select id="statusPropertyId"></select>
+      <label for="startStatusPropertyId">ステータスプロパティ名</label>
+      <select id="startStatusPropertyId"></select>
     </div>
     <div class="select-wrapper">
-      <label for="option">オプションプロパティ名</label>
-      <select id="statusOptionId"></select>
+      <label for="startStatusOptionId">オプションプロパティ名</label>
+      <select id="startStatusOptionId"></select>
     </div>
     <div class="select-wrapper">
-      <label for="date">日付プロパティ名</label>
-      <select id="datePropertyId"></select>
+      <label for="startDatePropertyId">日付プロパティ名</label>
+      <select id="startDatePropertyId"></select>
+    </div>
+    <h3>完了</h3>
+    <div class="select-wrapper">
+      <label for="completeStatusPropertyId">ステータスプロパティ名</label>
+      <select id="completeStatusPropertyId"></select>
+    </div>
+    <div class="select-wrapper">
+      <label for="completeStatusOptionId">オプションプロパティ名</label>
+      <select id="completeStatusOptionId"></select>
+    </div>
+    <div class="select-wrapper">
+      <label for="completeDatePropertyId">日付プロパティ名</label>
+      <select id="completeDatePropertyId"></select>
     </div>
     <div class="button-area">
       <button type="submit">保存</button>
