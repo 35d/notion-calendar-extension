@@ -12,11 +12,12 @@ const getDOM = (className) => `
   <button style="${STYLES}" class="${className}" id="appendCompleteButton">完了</button>
 `;
 
-/** Notion の接続情報 */
+/** Notion の情報 */
 let databaseId = "";
 let token = "";
-let status = "";
-let date = "";
+let statusPropertyId = "";
+let statusOptionId = "";
+let datePropertyId = "";
 
 /** 即時実行 */
 $(document).ready(() => {
@@ -48,24 +49,48 @@ const onClick = () => {
   }
 
   const title = $("div:contains('イベント')").find("p").text();
-  post(title, databaseId, token);
+  complete(title);
 };
 
-/** TODO: Post 処理 */
-const post = (title, databaseId, token) => {
+const complete = async (title) => {
   // バリデータ実装
-  console.log(title, databaseId, token);
+  const result = await fetch(
+    "http://127.0.0.1:5001/fast-notion/asia-northeast1/v3/update-status",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        databaseId,
+        token,
+        pageTitle: title,
+        statusPropertyId,
+        statusOptionId,
+        datePropertyId,
+        mode: "COMPLETE",
+      }),
+    }
+  );
+  console.log("complete", result);
 };
 
 /** Chrome のストレージに入っている情報を取得 */
 const getStorageData = () => {
   chrome.storage.sync.get(
-    ["token", "databaseId", "status", "date"],
+    [
+      "token",
+      "databaseId",
+      "statusPropertyId",
+      "statusOptionId",
+      "datePropertyId",
+    ],
     (items) => {
       databaseId = items.databaseId;
       token = items.token;
-      status = items.status || "ステータス";
-      date = items.date || "日付";
+      statusPropertyId = items.statusPropertyId;
+      statusOptionId = items.statusOptionId;
+      datePropertyId = items.datePropertyId;
     }
   );
 };
