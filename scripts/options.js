@@ -32,7 +32,7 @@ $(document).ready(() => {
       return;
     }
     const result = await fetch(
-      "http://127.0.0.1:5001/fast-notion/asia-northeast1/v3/database",
+      "https://fd8d-2400-2410-9501-ac00-40ed-d0e1-82ab-9130.ngrok-free.app/fast-notion/asia-northeast1/v3/database",
       {
         method: "POST",
         headers: {
