@@ -6,45 +6,10 @@ $(document).ready(() => {
   $("#completeStatusOptionId").select2();
   $("#completeDatePropertyId").select2();
 
-  {
-    token,
-      databaseId,
-      startStatusPropertyId,
-      startStatusOptionId,
-      startDatePropertyId,
-      completeStatusPropertyId,
-      completeStatusOptionId,
-      completeDatePropertyId;
-  }
-
-  // 設定をフォームに読み込む
-  chrome.storage.sync.get(
-    [
-      "token",
-      "databaseId",
-      "startStatusPropertyId",
-      "startStatusOptionId",
-      "startDatePropertyId",
-      "completeStatusPropertyId",
-      "completeStatusOptionId",
-      "completeDatePropertyId",
-    ],
-    (items) => {
-      $("#token").val(items.token);
-      $("#databaseId").val(items.databaseId);
-      $("#startStatusPropertyId").val(items.startStatusPropertyId);
-      $("#startStatusOptionId").val(items.startStatusOptionId);
-      $("#startDatePropertyId").val(items.startDatePropertyId);
-      $("#completeStatusPropertyId").val(items.completeStatusPropertyId);
-      $("#completeStatusOptionId").val(items.completeStatusOptionId);
-      $("#completeDatePropertyId").val(items.completeDatePropertyId);
-    }
-  );
-
   // API から取得したデータベースの情報格納用
   let databaseRes;
 
-  $("#readProperties").on("click", async (e) => {
+  const fetchDatabase = async () => {
     const token = $("#token").val();
     const databaseId = $("#databaseId").val();
     if (!token || !databaseId) {
@@ -52,7 +17,7 @@ $(document).ready(() => {
       return;
     }
     const result = await fetch(
-      "https://fd8d-2400-2410-9501-ac00-40ed-d0e1-82ab-9130.ngrok-free.app/fast-notion/asia-northeast1/v3/database",
+      "https://7b3e-2400-2410-9501-ac00-40ed-d0e1-82ab-9130.ngrok-free.app/fast-notion/asia-northeast1/v3/database",
       {
         method: "POST",
         headers: {
@@ -65,10 +30,11 @@ $(document).ready(() => {
       }
     );
     databaseRes = await result.json();
-    initSelect();
-  });
+  };
 
-  const initSelect = () => {
+  // トークン・データベースIDを入力後、手動で同期をした際に呼ばれる処理
+  const initSelect = async () => {
+    await fetchDatabase();
     const statusProperties = databaseRes.statusProperties;
     if (statusProperties.length > 0) {
       const statusOptions = statusProperties.map((_) => ({
@@ -98,6 +64,99 @@ $(document).ready(() => {
     $("#startDatePropertyId").select2({ data: dateOptions });
     $("#completeDatePropertyId").select2({ data: dateOptions });
   };
+
+  // すでに設定済みの情報を復元する処理
+  const resolveSelect = async (
+    startStatusPropertyId,
+    startStatusOptionId,
+    startDatePropertyId,
+    completeStatusPropertyId,
+    completeStatusOptionId,
+    completeDatePropertyId
+  ) => {
+    await fetchDatabase();
+    const statusProperties = databaseRes.statusProperties;
+    if (statusProperties.length > 0) {
+      const startStatusOptions = statusProperties.map((_) => ({
+        text: _.name,
+        id: _.id,
+        selected: _.id === startStatusPropertyId,
+      }));
+      $("#startStatusPropertyId").select2({ data: startStatusOptions });
+
+      const completeStatusOptions = statusProperties.map((_) => ({
+        text: _.name,
+        id: _.id,
+        selected: _.id === completeStatusPropertyId,
+      }));
+      $("#completeStatusPropertyId").select2({ data: completeStatusOptions });
+
+      const targetStartStatus = statusProperties.find(
+        (_) => _.id === startStatusPropertyId
+      );
+      const inProgressGroupOptions =
+        targetStartStatus.inProgressGroup.options.map((_) => ({
+          text: _.name,
+          id: _.id,
+          selected: _.id === startStatusOptionId,
+        }));
+      $("#startStatusOptionId").select2({ data: inProgressGroupOptions });
+
+      const targetCompleteStatus = statusProperties.find(
+        (_) => _.id === completeStatusPropertyId
+      );
+      const completeGroupOptions =
+        targetCompleteStatus.completeGroup.options.map((_) => ({
+          text: _.name,
+          id: _.id,
+          selected: _.id === completeStatusOptionId,
+        }));
+      $("#completeStatusOptionId").select2({ data: completeGroupOptions });
+    }
+    const startDateOptions = databaseRes.dateProperties.map((_) => ({
+      text: _.name,
+      id: _.id,
+      selected: _.id === startDatePropertyId,
+    }));
+    $("#startDatePropertyId").select2({ data: startDateOptions });
+
+    const completeDateOptions = databaseRes.dateProperties.map((_) => ({
+      text: _.name,
+      id: _.id,
+      selected: _.id === completeDatePropertyId,
+    }));
+    $("#completeDatePropertyId").select2({ data: completeDateOptions });
+  };
+
+  // 設定をフォームに読み込む
+  chrome.storage.sync.get(
+    [
+      "token",
+      "databaseId",
+      "startStatusPropertyId",
+      "startStatusOptionId",
+      "startDatePropertyId",
+      "completeStatusPropertyId",
+      "completeStatusOptionId",
+      "completeDatePropertyId",
+    ],
+    async (items) => {
+      $("#token").val(items.token);
+      $("#databaseId").val(items.databaseId);
+      if (items.token && items.databaseId && items.startStatusPropertyId) {
+        await resolveSelect(
+          items.startStatusPropertyId,
+          items.startStatusOptionId,
+          items.startDatePropertyId,
+          items.completeStatusPropertyId,
+          items.completeStatusOptionId,
+          items.completeDatePropertyId
+        );
+      }
+    }
+  );
+
+  $("#readProperties").on("click", initSelect);
 
   // ステータスプロパティの変更に応じて、オプションプロパティの選択肢を更新する
   $("#startStatusPropertyId").on("select2:select", (e) => {
