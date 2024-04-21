@@ -28,9 +28,12 @@ const buildActionButtons = (divClassName, buttonClassName) => `
 /** Notion の情報 */
 let databaseId = "";
 let token = "";
-let statusPropertyId = "";
-let statusOptionId = "";
-let datePropertyId = "";
+let startStatusPropertyId = "";
+let startStatusOptionId = "";
+let startDatePropertyId = "";
+let completeStatusPropertyId = "";
+let completeStatusOptionId = "";
+let completeDatePropertyId = "";
 
 /** 即時実行 */
 $(document).ready(() => {
@@ -94,9 +97,9 @@ const start = async () => {
         databaseId,
         token,
         pageTitle: title,
-        statusPropertyId,
-        statusOptionId,
-        datePropertyId,
+        statusPropertyId: startStatusPropertyId,
+        statusOptionId: startStatusOptionId,
+        datePropertyId: startDatePropertyId,
         mode: "START",
       }),
     }
@@ -115,9 +118,9 @@ const complete = async (title) => {
         databaseId,
         token,
         pageTitle: title,
-        statusPropertyId,
-        statusOptionId,
-        datePropertyId,
+        statusPropertyId: completeStatusPropertyId,
+        statusOptionId: completeStatusOptionId,
+        datePropertyId: completeDatePropertyId,
         mode: "COMPLETE",
       }),
     }
@@ -130,16 +133,22 @@ const getStorageData = () => {
     [
       "token",
       "databaseId",
-      "statusPropertyId",
-      "statusOptionId",
-      "datePropertyId",
+      "startStatusPropertyId",
+      "startStatusOptionId",
+      "startDatePropertyId",
+      "completeStatusPropertyId",
+      "completeStatusOptionId",
+      "completeDatePropertyId",
     ],
     (items) => {
       databaseId = items.databaseId;
       token = items.token;
-      statusPropertyId = items.statusPropertyId;
-      statusOptionId = items.statusOptionId;
-      datePropertyId = items.datePropertyId;
+      startStatusPropertyId = items.startStatusPropertyId;
+      startStatusOptionId = items.startStatusOptionId;
+      startDatePropertyId = items.startDatePropertyId;
+      completeStatusPropertyId = items.completeStatusPropertyId;
+      completeStatusOptionId = items.completeStatusOptionId;
+      completeDatePropertyId = items.completeDatePropertyId;
     }
   );
 };
