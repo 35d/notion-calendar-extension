@@ -87,7 +87,7 @@ const onClick = (action) => {
 
 const start = async (title) => {
   await fetch(
-    "https://7b3e-2400-2410-9501-ac00-40ed-d0e1-82ab-9130.ngrok-free.app/fast-notion/asia-northeast1/v3/update-status",
+    "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status",
     {
       method: "POST",
       headers: {
@@ -108,7 +108,7 @@ const start = async (title) => {
 
 const complete = async (title) => {
   await fetch(
-    "https://7b3e-2400-2410-9501-ac00-40ed-d0e1-82ab-9130.ngrok-free.app/fast-notion/asia-northeast1/v3/update-status",
+    "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status",
     {
       method: "POST",
       headers: {
