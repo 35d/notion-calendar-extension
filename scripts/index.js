@@ -72,7 +72,7 @@ const appendActionButtons = () => {
 };
 
 /** ボタンをクリックした際のイベントハンドラ */
-const onClick = (action) => {
+const onClick = async (action) => {
   // Notion の接続情報が設定されていない場合は、設定画面を開く
   if (!databaseId || !token) {
     openOptionsPage();
