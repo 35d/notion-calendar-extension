@@ -47,6 +47,17 @@ $(document).ready(() => {
   $(document).on("click", "#settingButton", openOptionsPage);
   $(document).on("click", "#startButton", () => onClick("START"));
   $(document).on("click", "#completeButton", () => onClick("COMPLETE"));
+
+  chrome.runtime.onMessage.addListener((message) => {
+    switch (message.action) {
+      // プロパティの設定が完了した際に発火し、設定の再読み込みを行う
+      case "syncStorage":
+        getStorageData();
+        break;
+      default:
+        break;
+    }
+  });
 });
 
 /** 設定ボタンを追加する */
@@ -67,7 +78,9 @@ const appendActionButtons = () => {
     const button = $("div:contains('Notionで開く')").parent("button");
     const parent = button.parent();
     const targetRoot = parent.parent();
-    targetRoot.append(buildActionButtons(parent.attr("class"), button.attr("class")));
+    targetRoot.append(
+      buildActionButtons(parent.attr("class"), button.attr("class"))
+    );
   }, DELAY_TIME);
 };
 
@@ -85,39 +98,45 @@ const onClick = async (action) => {
 };
 
 const start = async (title) => {
-  await fetch("https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      databaseId,
-      token,
-      pageTitle: title,
-      statusPropertyId: startStatusPropertyId,
-      statusOptionId: startStatusOptionId,
-      datePropertyId: startDatePropertyId,
-      mode: "START",
-    }),
-  });
+  await fetch(
+    "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        databaseId,
+        token,
+        pageTitle: title,
+        statusPropertyId: startStatusPropertyId,
+        statusOptionId: startStatusOptionId,
+        datePropertyId: startDatePropertyId,
+        mode: "START",
+      }),
+    }
+  );
 };
 
 const complete = async (title) => {
-  await fetch("https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      databaseId,
-      token,
-      pageTitle: title,
-      statusPropertyId: completeStatusPropertyId,
-      statusOptionId: completeStatusOptionId,
-      datePropertyId: completeDatePropertyId,
-      mode: "COMPLETE",
-    }),
-  });
+  await fetch(
+    "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        databaseId,
+        token,
+        pageTitle: title,
+        statusPropertyId: completeStatusPropertyId,
+        statusOptionId: completeStatusOptionId,
+        datePropertyId: completeDatePropertyId,
+        mode: "COMPLETE",
+      }),
+    }
+  );
 };
 
 /** Chrome のストレージに入っている情報を取得 */
@@ -142,7 +161,7 @@ const getStorageData = () => {
       completeStatusPropertyId = items.completeStatusPropertyId;
       completeStatusOptionId = items.completeStatusOptionId;
       completeDatePropertyId = items.completeDatePropertyId;
-    },
+    }
   );
 };
 

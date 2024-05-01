@@ -210,6 +210,7 @@ $(document).ready(() => {
       },
       () => {
         // 保存が完了したら、何らかのフィードバックをユーザーに提供する
+        chrome.runtime.sendMessage({ action: "completeSetting" });
         alert("設定が保存されました。");
         window.close();
       }
