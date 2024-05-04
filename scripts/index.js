@@ -45,8 +45,12 @@ $(document).ready(() => {
   $(document).on("click", appendSettingButton);
   $(document).on("click", appendActionButtons);
   $(document).on("click", "#settingButton", openOptionsPage);
-  $(document).on("click", "#startButton", () => onClick("START"));
-  $(document).on("click", "#completeButton", () => onClick("COMPLETE"));
+  $(document).on("click", "#startButton", function () {
+    onClick("START", this);
+  });
+  $(document).on("click", "#completeButton", function () {
+    onClick("COMPLETE", this);
+  });
 
   chrome.runtime.onMessage.addListener((message) => {
     switch (message.action) {
@@ -85,16 +89,26 @@ const appendActionButtons = () => {
 };
 
 /** ボタンをクリックした際のイベントハンドラ */
-const onClick = async (action) => {
+const onClick = async (action, elm) => {
   // Notion の接続情報が設定されていない場合は、設定画面を開く
   if (!databaseId || !token) {
     openOptionsPage();
     return;
   }
 
-  const title = $("div:contains('イベント')").find("p").text();
-  action === "START" ? await start(title) : await complete(title);
-  location.reload();
+  $(elm).text("更新中...");
+  $(elm).prop("disabled", true);
+
+  try {
+    const title = $("div:contains('イベント')").find("p").text();
+    action === "START" ? await start(title) : await complete(title);
+    location.reload();
+  } catch (e) {
+    alert("更新に失敗しました");
+    console.error(e);
+    $(elm).text(action === "START" ? "開始" : "完了");
+    $(elm).prop("disabled", false);
+  }
 };
 
 const start = async (title) => {
