@@ -111,46 +111,43 @@ const onClick = async (action, elm) => {
   }
 };
 
+const API_UPDATE_STATUS_URL =
+  "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status";
+
 const start = async (title) => {
-  await fetch(
-    "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        databaseId,
-        token,
-        pageTitle: title,
-        statusPropertyId: startStatusPropertyId,
-        statusOptionId: startStatusOptionId,
-        datePropertyId: startDatePropertyId,
-        mode: "START",
-      }),
-    }
-  );
+  await fetch(API_UPDATE_STATUS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      databaseId,
+      token,
+      pageTitle: title,
+      statusPropertyId: startStatusPropertyId,
+      statusOptionId: startStatusOptionId,
+      datePropertyId: startDatePropertyId,
+      mode: "START",
+    }),
+  });
 };
 
 const complete = async (title) => {
-  await fetch(
-    "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        databaseId,
-        token,
-        pageTitle: title,
-        statusPropertyId: completeStatusPropertyId,
-        statusOptionId: completeStatusOptionId,
-        datePropertyId: completeDatePropertyId,
-        mode: "COMPLETE",
-      }),
-    }
-  );
+  await fetch(API_UPDATE_STATUS_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      databaseId,
+      token,
+      pageTitle: title,
+      statusPropertyId: completeStatusPropertyId,
+      statusOptionId: completeStatusOptionId,
+      datePropertyId: completeDatePropertyId,
+      mode: "COMPLETE",
+    }),
+  });
 };
 
 /** Chrome のストレージに入っている情報を取得 */
