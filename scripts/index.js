@@ -102,7 +102,15 @@ const onClick = async (action, elm) => {
   try {
     const title = $("div:contains('イベント')").find("p").text();
     action === "START" ? await start(title) : await complete(title);
-    location.reload();
+
+    const request = window.indexedDB.open("cron");
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      db.transaction(["CalendarEvent"], "readwrite")
+        .objectStore("CalendarEvent")
+        .clear();
+      location.reload();
+    };
   } catch (e) {
     alert("更新に失敗しました");
     console.error(e);
