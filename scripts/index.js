@@ -34,6 +34,7 @@ let startDatePropertyId = "";
 let completeStatusPropertyId = "";
 let completeStatusOptionId = "";
 let completeDatePropertyId = "";
+let db;
 
 /** 即時実行 */
 $(document).ready(() => {
@@ -62,6 +63,11 @@ $(document).ready(() => {
         break;
     }
   });
+
+  const request = window.indexedDB.open("cron");
+  request.onsuccess = (event) => {
+    db = event.target.result;
+  };
 });
 
 /** 設定ボタンを追加する */
@@ -88,6 +94,7 @@ const appendActionButtons = () => {
   }, DELAY_TIME);
 };
 
+const CALENDAR_EVENT_STORE_NAME = "CalendarEvent";
 /** ボタンをクリックした際のイベントハンドラ */
 const onClick = async (action, elm) => {
   // Notion の接続情報が設定されていない場合は、設定画面を開く
@@ -101,28 +108,46 @@ const onClick = async (action, elm) => {
 
   try {
     const title = $("div:contains('イベント')").find("p").text();
-    action === "START" ? await start(title) : await complete(title);
+    const getAllReq = db
+      .transaction([CALENDAR_EVENT_STORE_NAME])
+      .objectStore(CALENDAR_EVENT_STORE_NAME)
+      .getAll();
+    getAllReq.onsuccess = async () => {
+      try {
+        const target = getAllReq.result.find((_) => _.summary === title);
+        if (!target)
+          throw new Error("更新対象のイベントが見つけられませんでした");
 
-    const request = window.indexedDB.open("cron");
-    request.onsuccess = (event) => {
-      const db = event.target.result;
-      db.transaction(["CalendarEvent"], "readwrite")
-        .objectStore("CalendarEvent")
-        .clear();
-      location.reload();
+        const id = target.id;
+        action === "START" ? await start(id, title) : await complete(id, title);
+
+        const clearReq = db
+          .transaction([CALENDAR_EVENT_STORE_NAME], "readwrite")
+          .objectStore(CALENDAR_EVENT_STORE_NAME)
+          .clear();
+        clearReq.onsuccess = () => {
+          location.reload();
+        };
+      } catch (e) {
+        handleError(e, action, elm);
+      }
     };
   } catch (e) {
-    alert("更新に失敗しました");
-    console.error(e);
-    $(elm).text(action === "START" ? "開始" : "完了");
-    $(elm).prop("disabled", false);
+    handleError(e, action, elm);
   }
+};
+
+const handleError = (e, action, elm) => {
+  alert("更新に失敗しました");
+  console.error(e);
+  $(elm).text(action === "START" ? "開始" : "完了");
+  $(elm).prop("disabled", false);
 };
 
 const API_UPDATE_STATUS_URL =
   "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status";
 
-const start = async (title) => {
+const start = async (id, title) => {
   await fetch(API_UPDATE_STATUS_URL, {
     method: "POST",
     headers: {
@@ -131,6 +156,7 @@ const start = async (title) => {
     body: JSON.stringify({
       databaseId,
       token,
+      id,
       pageTitle: title,
       statusPropertyId: startStatusPropertyId,
       statusOptionId: startStatusOptionId,
@@ -140,7 +166,7 @@ const start = async (title) => {
   });
 };
 
-const complete = async (title) => {
+const complete = async (id, title) => {
   await fetch(API_UPDATE_STATUS_URL, {
     method: "POST",
     headers: {
@@ -149,6 +175,7 @@ const complete = async (title) => {
     body: JSON.stringify({
       databaseId,
       token,
+      id,
       pageTitle: title,
       statusPropertyId: completeStatusPropertyId,
       statusOptionId: completeStatusOptionId,
