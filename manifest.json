@@ -1,24 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Notion Calendar Extension",
+  "name": "TTNC",
+  "description": "This extension is for tracking time spent on Notion",
   "version": "1.0",
-  "permissions": [
-    "tabs",
-    "storage"
-  ],
+  "permissions": ["tabs", "storage"],
   "options_ui": {
     "page": "./pages/options.html",
     "open_in_tab": true
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://calendar.notion.so/**"
-      ],
-      "js": [
-        "./lib/jquery-3.7.1.min.js",
-        "./scripts/index.js"
-      ]
+      "matches": ["https://calendar.notion.so/**"],
+      "js": ["./lib/jquery-3.7.1.min.js", "./scripts/index.js"]
     }
   ],
   "background": {
