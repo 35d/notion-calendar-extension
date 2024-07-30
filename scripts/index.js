@@ -14,6 +14,12 @@ const CONTAINER_STYLES = `
   gap: 6px;
 `;
 
+/** 言語設定を取得 */
+const lang = $("html").attr("lang");
+
+/** ボタンのテキスト名を定義 */
+const buttonText = lang === "ja" ? "Notionで開く" : "Open in Notion";
+
 const buildSettingButton = (className) => `
   <button style="${BUTTON_STYLES}" class="${className}" id="settingButton">設定</button>
 `;
@@ -74,7 +80,7 @@ $(document).ready(() => {
 const appendSettingButton = () => {
   setTimeout(() => {
     if ($("#settingButton").length > 0) return;
-    const button = $("div:contains('Notionで開く')").parent("button");
+    const button = $(`div:contains('${buttonText}')`).parent("button");
     const parent = button.parent();
     const className = button.attr("class");
     parent.append(buildSettingButton(className));
@@ -85,12 +91,10 @@ const appendSettingButton = () => {
 const appendActionButtons = () => {
   setTimeout(() => {
     if ($("#actionButtons").length > 0) return;
-    const button = $("div:contains('Notionで開く')").parent("button");
+    const button = $(`div:contains('${buttonText}')`).parent("button");
     const parent = button.parent();
     const targetRoot = parent.parent();
-    targetRoot.append(
-      buildActionButtons(parent.attr("class"), button.attr("class"))
-    );
+    targetRoot.append(buildActionButtons(parent.attr("class"), button.attr("class")));
   }, DELAY_TIME);
 };
 
@@ -108,23 +112,16 @@ const onClick = async (action, elm) => {
 
   try {
     const title = $("div:contains('イベント')").find("p").text();
-    const getAllReq = db
-      .transaction([CALENDAR_EVENT_STORE_NAME])
-      .objectStore(CALENDAR_EVENT_STORE_NAME)
-      .getAll();
+    const getAllReq = db.transaction([CALENDAR_EVENT_STORE_NAME]).objectStore(CALENDAR_EVENT_STORE_NAME).getAll();
     getAllReq.onsuccess = async () => {
       try {
         const target = getAllReq.result.find((_) => _.summary === title);
-        if (!target)
-          throw new Error("更新対象のイベントが見つけられませんでした");
+        if (!target) throw new Error("更新対象のイベントが見つけられませんでした");
 
         const id = target.id;
         action === "START" ? await start(id, title) : await complete(id, title);
 
-        const clearReq = db
-          .transaction([CALENDAR_EVENT_STORE_NAME], "readwrite")
-          .objectStore(CALENDAR_EVENT_STORE_NAME)
-          .clear();
+        const clearReq = db.transaction([CALENDAR_EVENT_STORE_NAME], "readwrite").objectStore(CALENDAR_EVENT_STORE_NAME).clear();
         clearReq.onsuccess = () => {
           location.reload();
         };
@@ -144,8 +141,7 @@ const handleError = (e, action, elm) => {
   $(elm).prop("disabled", false);
 };
 
-const API_UPDATE_STATUS_URL =
-  "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status";
+const API_UPDATE_STATUS_URL = "https://asia-northeast1-fast-notion.cloudfunctions.net/v3/update-status";
 
 const start = async (id, title) => {
   await fetch(API_UPDATE_STATUS_URL, {
@@ -207,7 +203,7 @@ const getStorageData = () => {
       completeStatusPropertyId = items.completeStatusPropertyId;
       completeStatusOptionId = items.completeStatusOptionId;
       completeDatePropertyId = items.completeDatePropertyId;
-    }
+    },
   );
 };
 
