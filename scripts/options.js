@@ -139,10 +139,12 @@ $(document).ready(() => {
       "completeStatusPropertyId",
       "completeStatusOptionId",
       "completeDatePropertyId",
+      "shouldReload", // boolean
     ],
     async (items) => {
       $("#token").val(items.token);
       $("#databaseId").val(items.databaseId);
+      $("#shouldReload").prop("checked", items.shouldReload === true);
       if (items.token && items.databaseId && items.startStatusPropertyId) {
         await resolveSelect(
           items.startStatusPropertyId,
@@ -150,10 +152,10 @@ $(document).ready(() => {
           items.startDatePropertyId,
           items.completeStatusPropertyId,
           items.completeStatusOptionId,
-          items.completeDatePropertyId
+          items.completeDatePropertyId,
         );
       }
-    }
+    },
   );
 
   $("#readProperties").on("click", initSelect);
@@ -207,6 +209,7 @@ $(document).ready(() => {
         completeStatusPropertyId,
         completeStatusOptionId,
         completeDatePropertyId,
+        shouldReload,
       },
       () => {
         // 保存が完了したら、何らかのフィードバックをユーザーに提供する

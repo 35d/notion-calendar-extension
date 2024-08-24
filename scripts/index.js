@@ -40,6 +40,7 @@ let startDatePropertyId = "";
 let completeStatusPropertyId = "";
 let completeStatusOptionId = "";
 let completeDatePropertyId = "";
+let shouldReload = true;
 let db;
 
 /** 即時実行 */
@@ -123,7 +124,13 @@ const onClick = async (action, elm) => {
 
         const clearReq = db.transaction([CALENDAR_EVENT_STORE_NAME], "readwrite").objectStore(CALENDAR_EVENT_STORE_NAME).clear();
         clearReq.onsuccess = () => {
-          location.reload();
+          if (shouldReload) {
+            location.reload();
+          } else {
+            alert("更新が完了しました");
+            $(elm).text(action === "START" ? "開始" : "完了");
+            $(elm).prop("disabled", false);
+          }
         };
       } catch (e) {
         handleError(e, action, elm);
@@ -193,6 +200,7 @@ const getStorageData = () => {
       "completeStatusPropertyId",
       "completeStatusOptionId",
       "completeDatePropertyId",
+      "shouldReload",
     ],
     (items) => {
       databaseId = items.databaseId;
@@ -203,6 +211,7 @@ const getStorageData = () => {
       completeStatusPropertyId = items.completeStatusPropertyId;
       completeStatusOptionId = items.completeStatusOptionId;
       completeDatePropertyId = items.completeDatePropertyId;
+      shouldReload = items.shouldReload;
     },
   );
 };
