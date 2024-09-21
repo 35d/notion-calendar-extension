@@ -43,6 +43,8 @@ let completeDatePropertyId = "";
 let shouldReload = true;
 let db;
 
+let eventId = null;
+
 /** 即時実行 */
 $(document).ready(() => {
   appendSettingButton();
@@ -60,6 +62,8 @@ $(document).ready(() => {
     onClick("COMPLETE", this);
   });
 
+  $(document).on("click", "[data-event-chip-key]", onClickCalendarEvent);
+
   chrome.runtime.onMessage.addListener((message) => {
     switch (message.action) {
       // プロパティの設定が完了した際に発火し、設定の再読み込みを行う
@@ -76,6 +80,18 @@ $(document).ready(() => {
     db = event.target.result;
   };
 });
+
+/** カレンダーイベントをクリックした際のイベントハンドラ */
+const onClickCalendarEvent = (e) => {
+  const chipKey = $(e.currentTarget).attr("data-event-chip-key");
+  eventId = extractEventId(chipKey);
+};
+
+/** data-event-chip-keyからイベントIDを抽出 */
+const extractEventId = (chipKey) => {
+  const match = chipKey.match(/\/([^\/]+)$/);
+  return match ? match[1] : null;
+};
 
 /** 設定ボタンを追加する */
 const appendSettingButton = () => {
@@ -113,29 +129,15 @@ const onClick = async (action, elm) => {
 
   try {
     const title = $("div:contains('イベント')").find("p").text();
-    const getAllReq = db.transaction([CALENDAR_EVENT_STORE_NAME]).objectStore(CALENDAR_EVENT_STORE_NAME).getAll();
-    getAllReq.onsuccess = async () => {
-      try {
-        const target = getAllReq.result.find((_) => _.summary === title);
-        if (!target) throw new Error("更新対象のイベントが見つけられませんでした");
+    action === "START" ? await start(eventId, title) : await complete(eventId, title);
 
-        const id = target.id;
-        action === "START" ? await start(id, title) : await complete(id, title);
-
-        const clearReq = db.transaction([CALENDAR_EVENT_STORE_NAME], "readwrite").objectStore(CALENDAR_EVENT_STORE_NAME).clear();
-        clearReq.onsuccess = () => {
-          if (shouldReload) {
-            location.reload();
-          } else {
-            alert("更新が完了しました");
-            $(elm).text(action === "START" ? "開始" : "完了");
-            $(elm).prop("disabled", false);
-          }
-        };
-      } catch (e) {
-        handleError(e, action, elm);
-      }
-    };
+    if (shouldReload) {
+      location.reload();
+    } else {
+      alert("更新が完了しました");
+      $(elm).text(action === "START" ? "開始" : "完了");
+      $(elm).prop("disabled", false);
+    }
   } catch (e) {
     handleError(e, action, elm);
   }
