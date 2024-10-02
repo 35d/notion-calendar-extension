@@ -116,6 +116,7 @@ const appendActionButtons = () => {
 };
 
 const CALENDAR_EVENT_STORE_NAME = "CalendarEvent";
+
 /** ボタンをクリックした際のイベントハンドラ */
 const onClick = async (action, elm) => {
   // Notion の接続情報が設定されていない場合は、設定画面を開く
@@ -134,9 +135,9 @@ const onClick = async (action, elm) => {
     if (shouldReload) {
       location.reload();
     } else {
-      alert("更新が完了しました");
       $(elm).text(action === "START" ? "開始" : "完了");
       $(elm).prop("disabled", false);
+      $("button:contains('Notionで開く')").click();
     }
   } catch (e) {
     handleError(e, action, elm);
